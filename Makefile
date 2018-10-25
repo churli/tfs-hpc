@@ -3,16 +3,17 @@
 # PETSC_ARCH=arch-darwin-c-debug
 # PETSC_DIR = 
 # PETSC_ARCH = 
-include ${PETSC_DIR}/conf/variables
+#include ${PETSC_DIR}/conf/variables
+include ${PETSC_DIR}lib/petsc/conf/variables
 
 # default gnu compiler (currently not used)
 # CC = g++
 # compiler wrapper for mac-cluster
-CC = 
+#CC = 
 # compiler on Ubuntu
 #
 #
-#CC = mpic++
+CC = mpic++
 CFLAGS = -Wall -Werror -O3 
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}

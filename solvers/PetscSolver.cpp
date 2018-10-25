@@ -285,8 +285,16 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
 
 	PetscBool has_fl;
 	PetscBool has_sub_type;
+
+#if (PETSC_VERSION_MAJOR==3 && PETSC_VERSION_MINOR<7)
+	// With older PETSc
 	PetscOptionsHasName(NULL,"-sub_pc_factor_levels", &has_fl);
 	PetscOptionsHasName(NULL,"-sub_pc_type", &has_sub_type);
+#else
+	// With PETSc 3.7 +
+	PetscOptionsHasName(NULL,NULL,"-sub_pc_factor_levels", &has_fl);
+	PetscOptionsHasName(NULL,NULL,"-sub_pc_type", &has_sub_type);
+#endif
 
 	if (!(has_sub_type)) PCSetType(subpc,PCILU);
 	if (!(has_fl)) PCFactorSetLevels(subpc,1);
