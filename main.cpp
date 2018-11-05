@@ -7,8 +7,9 @@
 #include "MeshsizeFactory.h"
 #include <iomanip>
 
-int main (int argc, char *argv[]) {
-
+int main(int argc, char *argv[])
+{
+    
     // Parallelization related. Initialize and identify
     // ---------------------------------------------------
     int rank;   // This processor's identifier
@@ -18,8 +19,8 @@ int main (int argc, char *argv[]) {
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
     std::cout << "Rank: " << rank << ", Nproc: " << nproc << std::endl;
     //----------------------------------------------------
-
-
+    
+    
     // read configuration and store information in parameters object
     Configuration configuration(argv[1]);
     Parameters parameters;
@@ -28,8 +29,8 @@ int main (int argc, char *argv[]) {
     MeshsizeFactory::getInstance().initMeshsize(parameters);
     FlowField *flowField = NULL;
     Simulation *simulation = NULL;
-    
-    #ifdef DEBUG
+
+#ifdef DEBUG
     std::cout << "Processor " << parameters.parallel.rank << " with index ";
     std::cout << parameters.parallel.indices[0] << ",";
     std::cout << parameters.parallel.indices[1] << ",";
@@ -42,52 +43,74 @@ int main (int argc, char *argv[]) {
     std::cout << ", right neighbour: " << parameters.parallel.rightNb;
     std::cout << std::endl;
     std::cout << "Min. meshsizes: " << parameters.meshsize->getDxMin() << ", " << parameters.meshsize->getDyMin() << ", " << parameters.meshsize->getDzMin() << std::endl;
-    #endif
-
+#endif
+    
     // initialise simulation
-    if (parameters.simulation.type=="turbulence"){
-      // TODO WS2: initialise turbulent flow field and turbulent simulation object
-      handleError(1,"Turbulence currently not supported yet!");
-    } else if (parameters.simulation.type=="dns"){
-      if(rank==0){ std::cout << "Start DNS simulation in " << parameters.geometry.dim << "D" << std::endl; }
-      flowField = new FlowField(parameters);
-      if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
-      simulation = new Simulation(parameters,*flowField);
-    } else {
-      handleError(1, "Unknown simulation type! Currently supported: dns, turbulence");
+    if (parameters.simulation.type == "turbulence")
+    {
+        // TODO WS2: initialise turbulent flow field and turbulent simulation object
+        handleError(1, "Turbulence currently not supported yet!");
+    }
+    else if (parameters.simulation.type == "dns")
+    {
+        if (rank == 0)
+        { std::cout << "Start DNS simulation in " << parameters.geometry.dim << "D" << std::endl; }
+        flowField = new FlowField(parameters);
+        if (flowField == NULL)
+        {handleError(1, "flowField==NULL!"); }
+        simulation = new Simulation(parameters, *flowField);
+    }
+    else
+    {
+        handleError(1, "Unknown simulation type! Currently supported: dns, turbulence");
     }
     // call initialization of simulation (initialize flow field)
-    if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
+    if (simulation == NULL)
+    {handleError(1, "simulation==NULL!"); }
     simulation->initializeFlowField();
     //flowField->getFlags().show();
-
+    
     FLOAT time = 0.0;
-    FLOAT timeStdOut=parameters.stdOut.interval;
+    FLOAT timeStdOut = parameters.stdOut.interval;
+    FLOAT timeVtk = parameters.vtk.interval;
     int timeSteps = 0;
-
+    
     // TODO WS1: plot initial state
-
+    simulation->plotVTK(timeSteps);
+    
+    std::cout << "Entering timeloop..." << std::endl;
+    
     // time loop
-    while (time < parameters.simulation.finalTime){
-
-      simulation->solveTimestep();
-
-      time += parameters.timestep.dt;
-
-      // std-out: terminal info
-      if ( (rank==0) && (timeStdOut <= time) ){
-          std::cout << "Current time: " << time << "\ttimestep: " <<
-                        parameters.timestep.dt << std::endl;
-          timeStdOut += parameters.stdOut.interval;
-      }
-      // TODO WS1: trigger VTK output
-      timeSteps++;
+    while (time < parameters.simulation.finalTime)
+    {
+        
+        simulation->solveTimestep();
+        
+        time += parameters.timestep.dt;
+        
+        // std-out: terminal info
+        if ((rank == 0) && (timeStdOut <= time))
+        {
+            std::cout << "Current time: " << time << "\ttimestep: " <<
+                      parameters.timestep.dt << std::endl;
+            timeStdOut += parameters.stdOut.interval;
+        }
+        // TODO WS1: trigger VTK output
+        if (timeVtk <= time)
+        {
+            simulation->plotVTK(timeSteps);
+            timeVtk += parameters.vtk.interval;
+        }
+        timeSteps++;
     }
-
+    
     // TODO WS1: plot final output
-
-    delete simulation; simulation=NULL;
-    delete flowField;  flowField= NULL;
-
+    simulation->plotVTK(timeSteps);
+    
+    delete simulation;
+    simulation = NULL;
+    delete flowField;
+    flowField = NULL;
+    
     PetscFinalize();
 }
