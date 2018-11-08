@@ -18,13 +18,11 @@ class VTKStencil : public FieldStencil<FlowField>
 {
 
 public:
-    int numPoints, numElements;
-//    Triple<double> *gridPoints;
-//    FLOAT *pressureValues;
-//    Triple<FLOAT> *velocityValues;
+    unsigned int numPoints, numElements;
     std::vector<Triple<double>> gridPoints;
     std::vector<FLOAT> pressureValues;
     std::vector<Triple<FLOAT>> velocityValues;
+    std::vector<int> geometryValues;
     const std::string header = "# vtk DataFile Version 2.0\n"
                                "Really cool turbulent flow simulation! :)\n"
                                "ASCII\n";

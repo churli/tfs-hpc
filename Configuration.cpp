@@ -6,6 +6,7 @@
 void readFloatMandatory(FLOAT & storage, tinyxml2::XMLElement *node, const char* tag){
     double value;   // Use to be able to select precision
     if (node->QueryDoubleAttribute(tag, &value) != tinyxml2::XML_NO_ERROR){
+        printf("%s\n", tag);
         handleError(1, "Error while reading mandatory argument");
     } else {
         storage = (FLOAT)value;
@@ -19,6 +20,7 @@ void readFloatOptional(FLOAT & storage, tinyxml2::XMLElement *node, const char* 
     if (result == tinyxml2::XML_NO_ATTRIBUTE){
         storage = defaultValue;
     } else if (result == tinyxml2::XML_WRONG_ATTRIBUTE_TYPE){
+        printf("%s\n", tag);
         handleError(1, "Error while reading optional argument");
     } else {
         storage = (FLOAT)value;
@@ -28,6 +30,7 @@ void readFloatOptional(FLOAT & storage, tinyxml2::XMLElement *node, const char* 
 void readIntMandatory(int & storage, tinyxml2::XMLElement *node, const char* tag){
     int value;
     if (node->QueryIntAttribute(tag, &value) != tinyxml2::XML_NO_ERROR){
+        printf("%s\n", tag);
         handleError(1, "Error while reading mandatory argument");
     } else {
         storage = value;
@@ -40,6 +43,7 @@ void readIntOptional(int & storage, tinyxml2::XMLElement *node, const char* tag,
     if (result == tinyxml2::XML_NO_ATTRIBUTE){
         storage = defaultValue;
     } else if (result == tinyxml2::XML_WRONG_ATTRIBUTE_TYPE){
+        printf("%s\n", tag);
         handleError(1, "Error while reading optional argument");
     }
 }
@@ -48,6 +52,7 @@ void readIntOptional(int & storage, tinyxml2::XMLElement *node, const char* tag,
 void readBoolMandatory(bool &storage, tinyxml2::XMLElement *node, const char *tag){
   bool value;
   if (node->QueryBoolAttribute(tag, &value) != tinyxml2::XML_NO_ERROR){
+      printf("%s\n", tag);
       handleError(1, "Error while reading mandatory argument");
   } else {
       storage = value;
@@ -61,6 +66,7 @@ void readBoolOptional(bool & storage, tinyxml2::XMLElement *node, const char* ta
     if (result == tinyxml2::XML_NO_ATTRIBUTE){
         storage = defaultValue;
     } else if (result == tinyxml2::XML_WRONG_ATTRIBUTE_TYPE){
+        printf("%s\n", tag);
         handleError(1, "Error while reading optional argument");
     }
 }

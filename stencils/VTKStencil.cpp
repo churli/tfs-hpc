@@ -3,16 +3,29 @@
 //
 
 #include <vector>
+#include <cassert>
 #include "VTKStencil.h"
 
 VTKStencil::VTKStencil(const Parameters &parameters) : FieldStencil(parameters)
 {
     // Now initialize the data structures for printing out VTKs
     auto gridSize = parameters.parallel.localSize;
+    assert(gridSize[0] >= 0 && gridSize[1] >= 0 && gridSize[2] >= 0);
     
-    numPoints = (gridSize[0] + 1) * (gridSize[1] + 1) * (gridSize[2] + 1);
-    numElements = gridSize[0] * gridSize[1] * gridSize[2];
-    
+    int dim = parameters.geometry.dim;
+    assert(dim == 2 || dim == 3);
+    if (dim == 2)
+    {
+        numPoints = static_cast<unsigned int>((gridSize[0] + 1) * (gridSize[1] + 1));
+        numElements = static_cast<unsigned int>(gridSize[0] * gridSize[1]);
+    }
+    else
+    {
+        numPoints = static_cast<unsigned int>((gridSize[0] + 1) * (gridSize[1] + 1) * (gridSize[2] + 1));
+        numElements = static_cast<unsigned int>(gridSize[0] * gridSize[1] * gridSize[2]);
+    }
+    std::cout << "numPoints = " << numPoints << std::endl;
+    std::cout << "numElements = " << numElements << std::endl;
     // Now fill the gridPoints
     populateGridPoints(parameters);
 }
@@ -77,6 +90,7 @@ void VTKStencil::apply(FlowField &flowField, int i, int j)
         v.y = tmpVel[1];
         v.z = 0;
         velocityValues.push_back(v);
+        geometryValues.push_back(0);
     }
     else
     {
@@ -87,6 +101,8 @@ void VTKStencil::apply(FlowField &flowField, int i, int j)
         v.y = 0;
         v.z = 0;
         velocityValues.push_back(v);
+        geometryValues.push_back(1);
+    
     }
 }
 
@@ -108,6 +124,7 @@ void VTKStencil::apply(FlowField &flowField, int i, int j, int k)
         v.y = tmpVel[1];
         v.z = tmpVel[2];
         velocityValues.push_back(v);
+        geometryValues.push_back(0);
     }
     else
     {
@@ -118,6 +135,7 @@ void VTKStencil::apply(FlowField &flowField, int i, int j, int k)
         v.y = 0;
         v.z = 0;
         velocityValues.push_back(v);
+        geometryValues.push_back(1);
     }
 }
 
@@ -142,13 +160,14 @@ void VTKStencil::write(FlowField &flowField, int timeStep)
             << " " << sizeY + 1
             << " " << sizeZ + 1
             << std::endl;
-    unsigned int numPoints = static_cast<unsigned int>((sizeX + 1) * (sizeY + 1) * (sizeZ + 1));
-    unsigned int numElements = static_cast<unsigned int>(sizeX * sizeY * sizeZ);
+    
     if (numPoints != gridPoints.size())
     {
         std::cout << "ERROR: numPoints != gridPoints.size() --> "
                   << numPoints << " != " << gridPoints.size() << std::endl;
     }
+    assert(numPoints == gridPoints.size());
+    
     outfile << "POINTS " << numPoints << " float" << std::endl;
     for (Triple<FLOAT> gp : gridPoints)
     {
@@ -169,6 +188,15 @@ void VTKStencil::write(FlowField &flowField, int timeStep)
         std::cout << "ERROR: numElements != velocityValues.size() --> "
                   << numElements << " != " << velocityValues.size() << std::endl;
     }
+    if (numElements != geometryValues.size())
+    {
+        std::cout << "ERROR: numElements != geometryValues.size() --> "
+                  << numElements << " != " << geometryValues.size() << std::endl;
+    }
+    assert(numElements == pressureValues.size());
+    assert(numElements == velocityValues.size());
+    assert(numElements == geometryValues.size());
+
     outfile << "CELL_DATA " << numElements << std::endl;
     // Write pressure values
     outfile << "SCALARS pressure float 1" << std::endl;
@@ -190,12 +218,22 @@ void VTKStencil::write(FlowField &flowField, int timeStep)
     }
     outfile << "" << std::endl;
     
+    // Write geometry values
+    outfile << "SCALARS geometry int 1" << std::endl;
+    outfile << "LOOKUP_TABLE default" << std::endl;
+    for (int gv : geometryValues)
+    {
+        outfile << gv << std::endl;
+    }
+    outfile << "" << std::endl;
+    
     // Close file
     outfile.close();
     
     // Cleaning the data lists
     pressureValues.clear();
     velocityValues.clear();
+    geometryValues.clear();
 }
 
 //eof

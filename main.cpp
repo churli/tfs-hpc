@@ -73,10 +73,11 @@ int main(int argc, char *argv[])
     FLOAT time = 0.0;
     FLOAT timeStdOut = parameters.stdOut.interval;
     FLOAT timeVtk = parameters.vtk.interval;
-    int timeSteps = 0;
+//    long timeSteps = 0;
+    int vtkCounter = 0;
     
     // TODO WS1: plot initial state
-    simulation->plotVTK(timeSteps);
+    simulation->plotVTK(vtkCounter);
     
     std::cout << "Entering timeloop..." << std::endl;
     
@@ -98,14 +99,15 @@ int main(int argc, char *argv[])
         // TODO WS1: trigger VTK output
         if (timeVtk <= time)
         {
-            simulation->plotVTK(timeSteps);
+            simulation->plotVTK(vtkCounter);
             timeVtk += parameters.vtk.interval;
+            ++vtkCounter;
         }
-        timeSteps++;
+//        timeSteps++;
     }
     
     // TODO WS1: plot final output
-    simulation->plotVTK(timeSteps);
+    simulation->plotVTK(vtkCounter);
     
     delete simulation;
     simulation = NULL;
