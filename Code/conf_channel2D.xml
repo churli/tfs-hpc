@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="100" />
+    <flow Re="50" />
     <simulation finalTime="10.0" >
         <type>dns</type>
         <scenario>channel</scenario>
@@ -10,7 +10,7 @@
     <geometry
       dim="2"
       lengthX="5.0" lengthY="1.0" lengthZ="1.0"
-      sizeX="10" sizeY="20" sizeZ="0"
+      sizeX="20" sizeY="10" sizeZ="0"
       stretchX="false" stretchY="true" stretchZ="true"
     >
     <!--<geometry-->

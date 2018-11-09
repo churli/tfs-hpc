@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="500"/>
+    <flow Re="10000"/>
     <simulation finalTime="10">
         <type>dns</type>
         <scenario>cavity</scenario>
@@ -10,7 +10,7 @@
 
     <geometry dim="2"
               lengthX="1.0" lengthY="1.0" lengthZ="1.0"
-              sizeX="20" sizeY="10" sizeZ="0"
+              sizeX="50" sizeY="50" sizeZ="0"
     >
         <mesh>uniform</mesh>
     </geometry>
@@ -40,7 +40,7 @@
             <vector x="0" y="0" z="0"/>
         </back>
     </walls>
-    <vtk interval="0.01">Out/cavity_result2D</vtk>
+    <vtk interval="0.1">Out/cavity_result2D</vtk>
     <!--<vtk interval="0.01">Out/cavity_result3D</vtk>-->
     <stdOut interval="0.01"/>
     <!--<parallel numProcessorsX="2" numProcessorsY="1" numProcessorsZ="1" />-->

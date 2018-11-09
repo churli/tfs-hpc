@@ -56,9 +56,10 @@ public:
      * @param flowField Flow field to be written
      */
     void write(FlowField &flowField, int timeStep);
-
+    
 private:
     void populateGridPoints(const Parameters &parameters);
+
 };
 
 #endif

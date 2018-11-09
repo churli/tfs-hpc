@@ -14,7 +14,7 @@ include ${PETSC_DIR}/conf/variables
 #
 #
 CC = mpic++
-CFLAGS = -Wall -Werror -O3 
+CFLAGS = -Wall -Werror -O3 -pg
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
 

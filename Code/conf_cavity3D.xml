@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="10"/>
+    <flow Re="1000000"/>
     <simulation finalTime="10">
         <type>dns</type>
         <scenario>cavity</scenario>

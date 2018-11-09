@@ -229,11 +229,11 @@ void VTKStencil::write(FlowField &flowField, int timeStep)
     
     // Close file
     outfile.close();
-    
     // Cleaning the data lists
     pressureValues.clear();
     velocityValues.clear();
     geometryValues.clear();
+    
 }
 
 //eof

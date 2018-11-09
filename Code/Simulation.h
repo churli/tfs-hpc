@@ -77,7 +77,7 @@ public:
             _velocityIterator(_flowField, parameters, _velocityStencil),
             _obstacleIterator(_flowField, parameters, _obstacleStencil),
             _vtkStencil(parameters),
-            _vtkIterator(_flowField, parameters, _vtkStencil, 2, 1),
+            _vtkIterator(_flowField, parameters, _vtkStencil, 1, 0),
             _solver(_flowField, parameters)
     {
     }
@@ -206,6 +206,8 @@ protected:
         
         _parameters.timestep.dt = globalMin;
         _parameters.timestep.dt *= _parameters.timestep.tau;
+        // Making sure we can output as much as we want!
+        _parameters.timestep.dt = fmin(_parameters.timestep.dt, _parameters.vtk.interval);
     }
     
 };
