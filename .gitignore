@@ -26,4 +26,7 @@ lib/*.so.*
 .idea
 cmake-build-*
 
+# Ignore archives
+*.zip
+
 #eof
